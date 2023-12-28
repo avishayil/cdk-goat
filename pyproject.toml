@@ -1,0 +1,33 @@
+[tool.poetry]
+name = "cdk-goat"
+version = "1.0.0"
+description = "Vulnerable CDK repository for training purposes"
+authors = ["Avishay Bar <avishay.il@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+
+[tool.poetry.dev-dependencies]
+# Automation
+cdk = {path = "cdk", develop = true}
+black = "==22.6.0"
+isort = "==5.11.5"
+flake8 = "==4.0.1"
+flake8-docstrings = "==1.6.0"
+coverage = "*"
+yamllint = "*"
+pre-commit = "*"
+
+# Testing & debugging
+boto3 = "^1.28.18"
+botocore = "^1.31.18"
+python-dotenv = ">=1.0.0"
+pytest = "*"
+
+# Diagrams
+diagrams = "*"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

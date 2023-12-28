@@ -1,0 +1,111 @@
+name: AWS CDK CI/CD with Code Scanning
+
+on:
+  push:
+    branches: [main]
+
+permissions: write-all
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+        - name: Checkout Repository
+          uses: actions/checkout@v3
+
+        - name: Set up Node and Python
+          uses: actions/setup-node@v3
+          with:
+            node-version: 18
+        - uses: actions/setup-python@v4
+          with:
+            python-version: 3.7
+
+        - name: Set up Snyk CLI
+          uses: snyk/actions/setup@master
+
+        - name: Install and configure Poetry
+          uses: snok/install-poetry@v1
+          with:
+            version: 1.5.1
+            virtualenvs-create: true
+            virtualenvs-in-project: true
+            installer-parallel: true
+
+        - name: Install CDK and Python Dependencies
+          run: |
+            sudo apt update && sudo apt install build-essential libpq-dev python3-psycopg2 python3-dev postgresql graphviz -y
+            npm install -g aws-cdk
+            poetry install --no-interaction --no-root
+            source .venv/bin/activate
+            pip install --upgrade pip setuptools wheel
+
+        - name: Run pre-commit tests
+          run: |
+            source .venv/bin/activate
+            pre-commit install
+            pre-commit run -a
+
+        - name: Create dvpwa virtual env
+          run: |
+            python3.7 -m venv .venv
+            source .venv/bin/activate
+            pip install --upgrade pip setuptools wheel
+            pip install -r requirements.txt
+          working-directory: cdk/containers/dvpwa
+
+        - name: Run CDK Synth
+          run: |
+            source .venv/bin/activate
+            cdk synth
+          env:
+            AWS_REGION: eu-west-1
+
+        - name: Test CDK for insecure resources
+          run: |
+            source .venv/bin/activate
+            pytest -v
+
+        - name: Snyk OSS Scan
+          run: |
+            source .venv/bin/activate
+            snyk test --sarif-file-output=snyk-oss.sarif
+          working-directory: cdk/containers/dvpwa
+          continue-on-error: true # To make sure that SARIF upload gets called
+          env:
+            SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+            SNYK_CFG_ORG: ${{ secrets.SNYK_ORG_ID }}
+
+        - name: Upload result to GitHub Code Scanning
+          uses: github/codeql-action/upload-sarif@v2
+          with:
+            sarif_file: cdk/containers/dvpwa/snyk-oss.sarif
+
+        - name: Snyk Code Scan
+          run: |
+            source .venv/bin/activate
+            snyk code test --sarif-file-output=snyk-code.sarif
+          continue-on-error: true # To make sure that SARIF upload gets called
+          working-directory: cdk/containers/dvpwa
+          env:
+            SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+            SNYK_CFG_ORG: ${{ secrets.SNYK_ORG_ID }}
+
+        - name: Upload result to GitHub Code Scanning
+          uses: github/codeql-action/upload-sarif@v2
+          with:
+            sarif_file: cdk/containers/dvpwa/snyk-code.sarif
+
+        - name: Snyk Infrastructure as Code Scan
+          run: |
+            source .venv/bin/activate
+            snyk iac test cdk.out/ --sarif-file-output=snyk-iac.sarif
+          continue-on-error: true # To make sure that SARIF upload gets called
+          env:
+            SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+            SNYK_CFG_ORG: ${{ secrets.SNYK_ORG_ID }}
+
+        - name: Upload result to GitHub Code Scanning
+          uses: github/codeql-action/upload-sarif@v2
+          with:
+            sarif_file: snyk-iac.sarif
