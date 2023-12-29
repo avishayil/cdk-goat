@@ -15,9 +15,13 @@ This repository serves as a demonstration of a "vulnerable-by-design" AWS Cloud 
    - [Installation](#installation)
 2. [Usage](#usage)
    - [Deploying the Vulnerable Infrastructure](#deploying-the-vulnerable-infrastructure)
-   - [Accessing the Vulnerable Application](#accessing-the-vulnerable-application)
+   - [Accessing the Vulnerable Infrastructure](#accessing-the-vulnerable-infrastructure)
    - [Investigating CloudFormation Outputs](#investigating-cloudformation-outputs)
-3. [License](#license)
+   - [Accessing the Vulnerable Application](#accessing-the-vulnerable-application)
+   - [Exploring Security Vulnerabilities](#exploring-security-vulnerabilities)
+3. [Contributing](#contributing)
+4. [Credits](#credits)
+5. [License](#license)
 
 ## Architecture
 
@@ -90,11 +94,7 @@ Use the helper script:
     root@ip-192-168-0-40:/app# your-command
 ```
 
-####
-
-Investigate the CloudFormation outputs:
-
-### CloudFormation Outputs
+### Investigate the CloudFormation Template Outputs
 
 | Output Name          | Description                                                | Value                       |
 |----------------------|------------------------------------------------------------|-----------------------------|
@@ -113,6 +113,10 @@ See [DVPWA](cdk/containers/dvpwa/README.rst)
 All infrastructure, third parties and code vulnerabilities are powered by [Snyk](https://snyk.io) scanning utilities and uploaded to [GitHub Code Scanning](https://docs.github.com/en/code-security/code-scanning/introduction-to-code-scanning/about-code-scanning) using the SARIF format. You can explore all of the vulnerabilities here: https://github.com/avishayil/cdk-goat/security/code-scanning
 
 If you're not forking the repository and running it in your own GitHub Actions pipeline, you can see all the vulnerabilities in the HTML reports attached as an assets to a GitHub release. For example, in version `1.0.0` here: https://github.com/avishayil/cdk-goat/releases/tag/v1.0.0
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ## Credits
 
