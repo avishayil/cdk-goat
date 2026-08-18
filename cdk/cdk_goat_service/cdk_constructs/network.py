@@ -1,4 +1,5 @@
 """Network CDK construct module."""
+
 from aws_cdk import aws_ec2 as ec2
 from constructs import Construct
 

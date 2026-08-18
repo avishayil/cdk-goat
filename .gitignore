@@ -380,3 +380,8 @@ package-lock.json
 yarn.lock
 .cdk.staging
 cdk.out
+
+### Snyk scan artifacts ###
+snyk-reports/
+snyk-*.sarif
+snyk-*.json

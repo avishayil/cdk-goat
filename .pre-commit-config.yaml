@@ -1,8 +1,12 @@
 ---
 
+# Install both the pre-commit and commit-msg hook types so that the
+# conventional-commit check below is enforced on every commit message.
+default_install_hook_types: [pre-commit, commit-msg]
+
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.1.0
+    rev: v5.0.0
     hooks:
       - id: trailing-whitespace
       - id: check-ast
@@ -10,7 +14,7 @@ repos:
       - id: check-yaml
 
   - repo: https://github.com/pycqa/flake8
-    rev: 4.0.1
+    rev: 7.1.1
     hooks:
       - id: flake8
         additional_dependencies: [
@@ -20,25 +24,27 @@ repos:
           'flake8-implicit-str-concat',
         ]
 
-  - repo: https://github.com/asottile/seed-isort-config
-    rev: v2.2.0
-    hooks:
-      - id: seed-isort-config
-
-  - repo: https://github.com/timothycrosley/isort
-    rev: 5.11.5
+  - repo: https://github.com/PyCQA/isort
+    rev: 5.13.2
     hooks:
       - id: isort
         pass_filenames: true
         args: ["--profile", "black"]
 
-  - repo: https://github.com/ambv/black
-    rev: 22.6.0
+  - repo: https://github.com/psf/black
+    rev: 24.10.0
     hooks:
       - id: black
 
   - repo: https://github.com/pre-commit/pygrep-hooks
-    rev: v1.9.0
+    rev: v1.10.0
     hooks:
       - id: python-use-type-annotations
       - id: python-no-eval
+
+  # Enforce Conventional Commits on commit messages (resolves #3).
+  - repo: https://github.com/compilerla/conventional-pre-commit
+    rev: v3.6.0
+    hooks:
+      - id: conventional-pre-commit
+        stages: [commit-msg]

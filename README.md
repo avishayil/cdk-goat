@@ -37,7 +37,7 @@ Before deploying the vulnerable infrastructure, ensure you have the following pr
 
 - [AWS CLI](https://aws.amazon.com/cli/)
 - [Node.js 18](https://nodejs.org/en/blog/release/v18.19.0)
-- [Python 3.7.16](https://www.python.org/downloads/release/python-3716/)
+- [Python 3.12](https://www.python.org/downloads/release/python-3120/)
 - [Poetry ](https://python-poetry.org/)
 - [Docker](https://www.docker.com/)
 - [AWS CDK](https://aws.amazon.com/cdk/)
@@ -57,6 +57,31 @@ Before deploying the vulnerable infrastructure, ensure you have the following pr
    § npm install -g aws-cdk
    § poetry install --no-root
    ```
+
+### Testing
+
+CDK Goat includes a `pytest` suite that asserts the synthesized CloudFormation
+template keeps its **intended** insecure configurations. After installing the
+dependencies above, run:
+
+```bash
+# Activate the virtual environment
+§ source .venv/bin/activate
+
+# Lint / format / commit-message hooks
+§ pre-commit install
+§ pre-commit run -a
+
+# Synthesize the template
+§ cdk synth
+
+# Run the tests
+§ pytest -v
+```
+
+The same checks run automatically in CI. For more detail, including how the
+deliberately vulnerable DVPWA dependencies are handled, see
+[CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Usage
 
