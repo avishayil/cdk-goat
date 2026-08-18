@@ -1,0 +1,36 @@
+---
+# Dependabot configuration for CDK Goat.
+#
+# NOTE: cdk/containers/dvpwa (the bundled DVPWA application and its
+# requirements.txt) is INTENTIONALLY vulnerable and is used as a training
+# target. It is deliberately NOT covered by Dependabot so those pinned,
+# vulnerable dependencies are never bumped. Do not add an ecosystem entry for
+# that directory.
+
+version: 2
+updates:
+  # Root Poetry project (dev tooling: black, isort, flake8, pytest, etc.)
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+
+  # CDK application dependencies (aws-cdk-lib, constructs, cdk-ecr-deployment)
+  - package-ecosystem: "pip"
+    directory: "/cdk"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+
+  # GitHub Actions used in the CI/CD workflows
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"

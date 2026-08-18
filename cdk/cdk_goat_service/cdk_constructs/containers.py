@@ -1,4 +1,5 @@
 """Containers CDK construct module."""
+
 import aws_cdk as cdk
 from aws_cdk import aws_ec2 as ec2
 from aws_cdk import aws_ecr as ecr

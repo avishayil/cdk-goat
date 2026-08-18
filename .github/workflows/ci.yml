@@ -3,23 +3,29 @@ name: AWS CDK CI/CD with Code Scanning
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
 
-permissions: write-all
+# Least-privilege permissions: read the repo contents and publish code
+# scanning (SARIF) results. Avoid the previous `write-all` blanket grant.
+permissions:
+  contents: read
+  security-events: write
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
         - name: Checkout Repository
-          uses: actions/checkout@v3
+          uses: actions/checkout@v4
 
         - name: Set up Node and Python
-          uses: actions/setup-node@v3
+          uses: actions/setup-node@v4
           with:
             node-version: 18
-        - uses: actions/setup-python@v4
+        - uses: actions/setup-python@v5
           with:
-            python-version: 3.7
+            python-version: "3.12"
 
         - name: Set up Snyk CLI
           uses: snyk/actions/setup@master
@@ -27,7 +33,7 @@ jobs:
         - name: Install and configure Poetry
           uses: snok/install-poetry@v1
           with:
-            version: 1.5.1
+            version: 1.8.3
             virtualenvs-create: true
             virtualenvs-in-project: true
             installer-parallel: true
@@ -47,8 +53,14 @@ jobs:
             pre-commit run -a
 
         - name: Create dvpwa virtual env
+          # Best-effort: the dvpwa app pins intentionally-vulnerable, legacy
+          # dependencies that may not build on modern Python. This venv only
+          # feeds the Snyk OSS scan below, so a build failure must not block
+          # the core checks (cdk synth + pytest). The Snyk steps already
+          # degrade gracefully.
+          continue-on-error: true
           run: |
-            python3.7 -m venv .venv
+            python3.12 -m venv .venv
             source .venv/bin/activate
             pip install --upgrade pip setuptools wheel
             pip install -r requirements.txt
@@ -69,7 +81,7 @@ jobs:
         - name: Snyk OSS Scan
           run: |
             source .venv/bin/activate
-            snyk test --sarif-file-output=snyk-oss.sarif
+            snyk test --sarif-file-output=snyk-oss.sarif --json-file-output=snyk-oss.json
           working-directory: cdk/containers/dvpwa
           continue-on-error: true # To make sure that SARIF upload gets called
           env:
@@ -77,14 +89,15 @@ jobs:
             SNYK_CFG_ORG: ${{ secrets.SNYK_ORG_ID }}
 
         - name: Upload result to GitHub Code Scanning
-          uses: github/codeql-action/upload-sarif@v2
+          uses: github/codeql-action/upload-sarif@v3
+          continue-on-error: true # Do not fail the job if Snyk produced no SARIF (e.g. missing SNYK_TOKEN)
           with:
             sarif_file: cdk/containers/dvpwa/snyk-oss.sarif
 
         - name: Snyk Code Scan
           run: |
             source .venv/bin/activate
-            snyk code test --sarif-file-output=snyk-code.sarif
+            snyk code test --sarif-file-output=snyk-code.sarif --json-file-output=snyk-code.json
           continue-on-error: true # To make sure that SARIF upload gets called
           working-directory: cdk/containers/dvpwa
           env:
@@ -92,20 +105,34 @@ jobs:
             SNYK_CFG_ORG: ${{ secrets.SNYK_ORG_ID }}
 
         - name: Upload result to GitHub Code Scanning
-          uses: github/codeql-action/upload-sarif@v2
+          uses: github/codeql-action/upload-sarif@v3
+          continue-on-error: true # Do not fail the job if Snyk produced no SARIF (e.g. missing SNYK_TOKEN)
           with:
             sarif_file: cdk/containers/dvpwa/snyk-code.sarif
 
         - name: Snyk Infrastructure as Code Scan
           run: |
             source .venv/bin/activate
-            snyk iac test cdk.out/ --sarif-file-output=snyk-iac.sarif
+            snyk iac test cdk.out/ --sarif-file-output=snyk-iac.sarif --json-file-output=snyk-iac.json
           continue-on-error: true # To make sure that SARIF upload gets called
           env:
             SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
             SNYK_CFG_ORG: ${{ secrets.SNYK_ORG_ID }}
 
         - name: Upload result to GitHub Code Scanning
-          uses: github/codeql-action/upload-sarif@v2
+          uses: github/codeql-action/upload-sarif@v3
+          continue-on-error: true # Do not fail the job if Snyk produced no SARIF (e.g. missing SNYK_TOKEN)
           with:
             sarif_file: snyk-iac.sarif
+
+        - name: Generate Snyk HTML reports
+          run: |
+            ./scripts/generate_snyk_report.sh
+          continue-on-error: true
+
+        - name: Upload Snyk HTML reports
+          uses: actions/upload-artifact@v4
+          with:
+            name: snyk-html-reports
+            path: snyk-reports/*.html
+            if-no-files-found: warn
