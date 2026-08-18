@@ -89,7 +89,7 @@ jobs:
             SNYK_CFG_ORG: ${{ secrets.SNYK_ORG_ID }}
 
         - name: Upload result to GitHub Code Scanning
-          uses: github/codeql-action/upload-sarif@v3
+          uses: github/codeql-action/upload-sarif@v4
           continue-on-error: true # Do not fail the job if Snyk produced no SARIF (e.g. missing SNYK_TOKEN)
           with:
             sarif_file: cdk/containers/dvpwa/snyk-oss.sarif
@@ -105,7 +105,7 @@ jobs:
             SNYK_CFG_ORG: ${{ secrets.SNYK_ORG_ID }}
 
         - name: Upload result to GitHub Code Scanning
-          uses: github/codeql-action/upload-sarif@v3
+          uses: github/codeql-action/upload-sarif@v4
           continue-on-error: true # Do not fail the job if Snyk produced no SARIF (e.g. missing SNYK_TOKEN)
           with:
             sarif_file: cdk/containers/dvpwa/snyk-code.sarif
@@ -120,7 +120,7 @@ jobs:
             SNYK_CFG_ORG: ${{ secrets.SNYK_ORG_ID }}
 
         - name: Upload result to GitHub Code Scanning
-          uses: github/codeql-action/upload-sarif@v3
+          uses: github/codeql-action/upload-sarif@v4
           continue-on-error: true # Do not fail the job if Snyk produced no SARIF (e.g. missing SNYK_TOKEN)
           with:
             sarif_file: snyk-iac.sarif
