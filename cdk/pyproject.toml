@@ -7,7 +7,7 @@ packages = [{include = "cdk_goat_service"}]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-aws-cdk-lib = ">=2.170.0,<3.0.0"
+aws-cdk-lib = ">=2.255.0,<3.0.0"
 cdk_ecr_deployment = ">=2.5.6"
 constructs = ">=10.0.0"
 
