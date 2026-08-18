@@ -3,6 +3,8 @@ name: AWS CDK CI/CD with Code Scanning
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
 
 # Least-privilege permissions: read the repo contents and publish code
 # scanning (SARIF) results. Avoid the previous `write-all` blanket grant.
@@ -82,6 +84,7 @@ jobs:
 
         - name: Upload result to GitHub Code Scanning
           uses: github/codeql-action/upload-sarif@v3
+          continue-on-error: true # Do not fail the job if Snyk produced no SARIF (e.g. missing SNYK_TOKEN)
           with:
             sarif_file: cdk/containers/dvpwa/snyk-oss.sarif
 
@@ -97,6 +100,7 @@ jobs:
 
         - name: Upload result to GitHub Code Scanning
           uses: github/codeql-action/upload-sarif@v3
+          continue-on-error: true # Do not fail the job if Snyk produced no SARIF (e.g. missing SNYK_TOKEN)
           with:
             sarif_file: cdk/containers/dvpwa/snyk-code.sarif
 
@@ -111,6 +115,7 @@ jobs:
 
         - name: Upload result to GitHub Code Scanning
           uses: github/codeql-action/upload-sarif@v3
+          continue-on-error: true # Do not fail the job if Snyk produced no SARIF (e.g. missing SNYK_TOKEN)
           with:
             sarif_file: snyk-iac.sarif
 
