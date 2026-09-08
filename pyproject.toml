@@ -12,7 +12,7 @@ python = "^3.9"
 # Automation
 cdk = {path = "cdk", develop = true}
 black = "==24.10.0"
-isort = "==5.13.2"
+isort = "==6.1.0"
 flake8 = "==7.1.1"
 flake8-docstrings = "==1.7.0"
 coverage = "*"

@@ -502,6 +502,27 @@ files = [
 license = ["ukkonen"]
 
 [[package]]
+name = "importlib-metadata"
+version = "8.4.0"
+description = "Read metadata from Python packages"
+optional = false
+python-versions = ">=3.8"
+groups = ["dev"]
+markers = "python_version == \"3.9\""
+files = [
+    {file = "importlib_metadata-8.4.0-py3-none-any.whl", hash = "sha256:66f342cc6ac9818fc6ff340576acd24d65ba0b3efabb2b4ac08b598965a4a2f1"},
+    {file = "importlib_metadata-8.4.0.tar.gz", hash = "sha256:9a547d3bc3608b025f93d403fdd1aae741c24fbb8314df4b155675742ce303c5"},
+]
+
+[package.dependencies]
+zipp = ">=0.5"
+
+[package.extras]
+doc = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "rst.linker (>=1.9)", "sphinx (>=3.5)", "sphinx-lint"]
+perf = ["ipython"]
+test = ["flufl.flake8", "importlib-resources (>=1.3) ; python_version < \"3.9\"", "jaraco.test (>=5.4)", "packaging", "pyfakefs", "pytest (>=6,!=8.1.*)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=2.2)", "pytest-mypy", "pytest-perf (>=0.9.2)", "pytest-ruff (>=0.2.1) ; sys_platform != \"cygwin\""]
+
+[[package]]
 name = "importlib-resources"
 version = "5.12.0"
 description = "Read resources from Python packages"
@@ -535,18 +556,22 @@ files = [
 
 [[package]]
 name = "isort"
-version = "5.13.2"
+version = "6.1.0"
 description = "A Python utility / library to sort Python imports."
 optional = false
-python-versions = ">=3.8.0"
+python-versions = ">=3.9.0"
 groups = ["dev"]
 files = [
-    {file = "isort-5.13.2-py3-none-any.whl", hash = "sha256:8ca5e72a8d85860d5a3fa69b8745237f2939afe12dbf656afbcb47fe72d947a6"},
-    {file = "isort-5.13.2.tar.gz", hash = "sha256:48fdfcb9face5d58a4f6dde2e72a1fb8dcaf8ab26f95ab49fab84c2ddefb0109"},
+    {file = "isort-6.1.0-py3-none-any.whl", hash = "sha256:58d8927ecce74e5087aef019f778d4081a3b6c98f15a80ba35782ca8a2097784"},
+    {file = "isort-6.1.0.tar.gz", hash = "sha256:9b8f96a14cfee0677e78e941ff62f03769a06d412aabb9e2a90487b3b7e8d481"},
 ]
 
+[package.dependencies]
+importlib-metadata = {version = ">=4.6.0", markers = "python_version < \"3.10\""}
+
 [package.extras]
-colors = ["colorama (>=0.4.6)"]
+colors = ["colorama"]
+plugins = ["setuptools"]
 
 [[package]]
 name = "jinja2"
@@ -1221,4 +1246,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.9"
-content-hash = "9a3fc5005c476313d8d0904747fea35ba590a6014e83363d065c9cfbcb4c1727"
+content-hash = "34a7bb196cc5db41c0e996dcc6f3b1f7e4e8dc25d8397cec6a314e21a59a875d"
